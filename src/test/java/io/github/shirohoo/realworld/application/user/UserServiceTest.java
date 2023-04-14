@@ -2,17 +2,19 @@ package io.github.shirohoo.realworld.application.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.shirohoo.realworld.IntegrationTest;
+import io.github.shirohoo.realworld.application.user.request.LoginUserRequest;
+import io.github.shirohoo.realworld.application.user.request.SignUpUserRequest;
+import io.github.shirohoo.realworld.application.user.request.UpdateUserRequest;
+import io.github.shirohoo.realworld.application.user.service.UserService;
 import io.github.shirohoo.realworld.domain.user.User;
 import io.github.shirohoo.realworld.domain.user.UserVO;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-@SpringBootTest
+@IntegrationTest
 @DisplayName("The User Services")
 class UserServiceTest {
     @Autowired

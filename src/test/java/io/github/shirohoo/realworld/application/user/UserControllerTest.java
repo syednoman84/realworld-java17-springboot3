@@ -1,15 +1,14 @@
 package io.github.shirohoo.realworld.application.user;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import io.github.shirohoo.realworld.IntegrationTest;
+import io.github.shirohoo.realworld.application.user.request.LoginUserRequest;
+import io.github.shirohoo.realworld.application.user.request.SignUpUserRequest;
+import io.github.shirohoo.realworld.application.user.request.UpdateUserRequest;
+import io.github.shirohoo.realworld.application.user.service.UserService;
 import io.github.shirohoo.realworld.domain.user.UserVO;
 
 import java.util.Map;
@@ -17,22 +16,17 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Transactional
-@SpringBootTest
-@AutoConfigureMockMvc
+@IntegrationTest
 @DisplayName("The User APIs")
 class UserControllerTest {
     @Autowired
-    private MockMvc sut;
+    private MockMvc mockMvc;
 
     @Autowired
     private UserService userService;
@@ -48,7 +42,7 @@ class UserControllerTest {
         SignUpUserRequest signUpRequest = new SignUpUserRequest("james@gmail.com", "james", "1234");
 
         // when
-        ResultActions resultActions = sut.perform(post("/api/users")
+        ResultActions resultActions = mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(Map.of("user", signUpRequest))));
 
@@ -73,7 +67,7 @@ class UserControllerTest {
         LoginUserRequest loginRequest = new LoginUserRequest("james@gmail.com", "1234");
 
         // when
-        ResultActions resultActions = sut.perform(post("/api/users/login")
+        ResultActions resultActions = mockMvc.perform(post("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(Map.of("user", loginRequest))));
 
@@ -102,7 +96,7 @@ class UserControllerTest {
         String jamesToken = userService.login(loginRequest).token();
 
         // when
-        ResultActions resultActions = sut.perform(get("/api/user").header("Authorization", "Token " + jamesToken));
+        ResultActions resultActions = mockMvc.perform(get("/api/user").header("Authorization", "Token " + jamesToken));
 
         // then
         resultActions
@@ -137,7 +131,7 @@ class UserControllerTest {
         UpdateUserRequest updateRequest = new UpdateUserRequest(email, username, password, bio, image);
 
         // when
-        ResultActions resultActions = sut.perform(put("/api/user")
+        ResultActions resultActions = mockMvc.perform(put("/api/user")
                 .header("Authorization", "Token " + userVO.token())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(Map.of("user", updateRequest))));

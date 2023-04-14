@@ -1,6 +1,6 @@
 package io.github.shirohoo.realworld.domain.user;
 
-import io.github.shirohoo.realworld.domain.content.Article;
+import io.github.shirohoo.realworld.domain.article.Article;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;

@@ -1,31 +1,27 @@
 package io.github.shirohoo.realworld.application.user;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import io.github.shirohoo.realworld.IntegrationTest;
+import io.github.shirohoo.realworld.application.user.request.LoginUserRequest;
+import io.github.shirohoo.realworld.application.user.request.SignUpUserRequest;
+import io.github.shirohoo.realworld.application.user.service.UserService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-@SpringBootTest
-@AutoConfigureMockMvc
+@IntegrationTest
 @DisplayName("The Profile APIs")
 class ProfileControllerTest {
     @Autowired
-    private MockMvc sut;
+    private MockMvc mockMvc;
 
     @Autowired
     private UserService userService;
@@ -40,7 +36,7 @@ class ProfileControllerTest {
     @DisplayName("provides an API that allows unauthenticated users to view other users' profiles.")
     void getProfileOnUnauthenticated() throws Exception {
         // when
-        ResultActions resultActions = sut.perform(get("/api/profiles/{username}", "simpson"));
+        ResultActions resultActions = mockMvc.perform(get("/api/profiles/{username}", "simpson"));
 
         // then
         resultActions
@@ -63,8 +59,8 @@ class ProfileControllerTest {
         String jamesToken = userService.login(loginRequest).token();
 
         // when
-        ResultActions resultActions =
-                sut.perform(get("/api/profiles/{username}", "simpson").header("Authorization", "Token " + jamesToken));
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/profiles/{username}", "simpson").header("Authorization", "Token " + jamesToken));
 
         // then
         resultActions
@@ -86,7 +82,7 @@ class ProfileControllerTest {
         String jamesToken = userService.login(loginRequest).token();
 
         // when
-        ResultActions resultActions = sut.perform(
+        ResultActions resultActions = mockMvc.perform(
                 post("/api/profiles/{username}/follow", "simpson").header("Authorization", "Token " + jamesToken));
 
         // then
@@ -109,10 +105,11 @@ class ProfileControllerTest {
         String jamesToken = userService.login(loginRequest).token();
 
         // - james follow simpson
-        sut.perform(post("/api/profiles/{username}/follow", "simpson").header("Authorization", "Token " + jamesToken));
+        mockMvc.perform(
+                post("/api/profiles/{username}/follow", "simpson").header("Authorization", "Token " + jamesToken));
 
         // when
-        ResultActions resultActions = sut.perform(
+        ResultActions resultActions = mockMvc.perform(
                 delete("/api/profiles/{username}/follow", "simpson").header("Authorization", "Token " + jamesToken));
 
         // then
