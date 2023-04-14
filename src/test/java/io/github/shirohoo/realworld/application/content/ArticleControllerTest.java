@@ -19,6 +19,7 @@ import io.github.shirohoo.realworld.domain.content.Tag;
 import io.github.shirohoo.realworld.domain.content.TagRepository;
 import io.github.shirohoo.realworld.domain.user.User;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -136,8 +137,8 @@ class ArticleControllerTest {
     @DisplayName("provides an API that allows authenticated users to create articles.")
     void createArticle() throws Exception {
         // given
-        CreateArticleRequest request = new CreateArticleRequest(
-                "Test Article", "Test description", "Test body", new String[] {"test", "sample"});
+        CreateArticleRequest request =
+                new CreateArticleRequest("Test Article", "Test description", "Test body", List.of("test", "sample"));
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/api/articles")
@@ -162,8 +163,8 @@ class ArticleControllerTest {
     public void updateArticle() throws Exception {
         // given
         // - create a test article
-        CreateArticleRequest createRequest = new CreateArticleRequest(
-                "Test Article", "Test description", "Test body", new String[] {"test", "sample"});
+        CreateArticleRequest createRequest =
+                new CreateArticleRequest("Test Article", "Test description", "Test body", List.of("test", "sample"));
 
         // - get the slug of the article
         String slug = JsonPath.parse(mockMvc.perform(post("/api/articles")
@@ -199,8 +200,8 @@ class ArticleControllerTest {
     public void deleteArticle() throws Exception {
         // given
         // - create a test article
-        CreateArticleRequest createRequest = new CreateArticleRequest(
-                "Test Article", "Test description", "Test body", new String[] {"test", "sample"});
+        CreateArticleRequest createRequest =
+                new CreateArticleRequest("Test Article", "Test description", "Test body", List.of("test", "sample"));
 
         // - get the slug of the article
         String slug = JsonPath.parse(mockMvc.perform(post("/api/articles")
@@ -225,8 +226,8 @@ class ArticleControllerTest {
     public void createComment() throws Exception {
         // given
         // - create a test article
-        CreateArticleRequest createRequest = new CreateArticleRequest(
-                "Test Article", "Test description", "Test body", new String[] {"test", "sample"});
+        CreateArticleRequest createRequest =
+                new CreateArticleRequest("Test Article", "Test description", "Test body", List.of("test", "sample"));
 
         // - get the slug of the article by james
         String slug = JsonPath.parse(mockMvc.perform(post("/api/articles")
@@ -260,8 +261,8 @@ class ArticleControllerTest {
     public void getComments() throws Exception {
         // given
         // - create a test article
-        CreateArticleRequest createRequest = new CreateArticleRequest(
-                "Test Article", "Test description", "Test body", new String[] {"test", "sample"});
+        CreateArticleRequest createRequest =
+                new CreateArticleRequest("Test Article", "Test description", "Test body", List.of("test", "sample"));
 
         // - get the slug of the article by james
         String slug = JsonPath.parse(mockMvc.perform(post("/api/articles")
@@ -298,8 +299,8 @@ class ArticleControllerTest {
     public void deleteComment() throws Exception {
         // given
         // - create a test article
-        CreateArticleRequest createRequest = new CreateArticleRequest(
-                "Test Article", "Test description", "Test body", new String[] {"test", "sample"});
+        CreateArticleRequest createRequest =
+                new CreateArticleRequest("Test Article", "Test description", "Test body", List.of("test", "sample"));
 
         // - get the slug of the article by james
         String slug = JsonPath.parse(mockMvc.perform(post("/api/articles")
@@ -336,8 +337,8 @@ class ArticleControllerTest {
     public void favoriteArticle() throws Exception {
         // given
         // - create a test article
-        CreateArticleRequest createRequest = new CreateArticleRequest(
-                "Test Article", "Test description", "Test body", new String[] {"test", "sample"});
+        CreateArticleRequest createRequest =
+                new CreateArticleRequest("Test Article", "Test description", "Test body", List.of("test", "sample"));
 
         // - get the slug of the article by james
         String slug = JsonPath.parse(mockMvc.perform(post("/api/articles")
@@ -373,8 +374,8 @@ class ArticleControllerTest {
     public void unfavoriteArticle() throws Exception {
         // given
         // - create a test article
-        CreateArticleRequest createRequest = new CreateArticleRequest(
-                "Test Article", "Test description", "Test body", new String[] {"test", "sample"});
+        CreateArticleRequest createRequest =
+                new CreateArticleRequest("Test Article", "Test description", "Test body", List.of("test", "sample"));
 
         // - get the slug of the article by james
         String slug = JsonPath.parse(mockMvc.perform(post("/api/articles")

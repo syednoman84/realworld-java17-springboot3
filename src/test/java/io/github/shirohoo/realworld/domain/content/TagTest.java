@@ -13,7 +13,6 @@ class TagTest {
         // given
         Article article = Article.builder()
                 .id(1)
-                .slug("test-article")
                 .title("Test Article")
                 .description("This is a test article.")
                 .content("Lorem ipsum dolor sit amet.")

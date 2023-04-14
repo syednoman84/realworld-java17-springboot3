@@ -1,7 +1,5 @@
 package io.github.shirohoo.realworld.application.content;
 
-import static org.springframework.util.StringUtils.hasText;
-
 import io.github.shirohoo.realworld.domain.content.Article;
 import io.github.shirohoo.realworld.domain.content.ArticleFacets;
 import io.github.shirohoo.realworld.domain.content.ArticleRepository;
@@ -9,15 +7,11 @@ import io.github.shirohoo.realworld.domain.content.ArticleVO;
 import io.github.shirohoo.realworld.domain.content.Comment;
 import io.github.shirohoo.realworld.domain.content.CommentRepository;
 import io.github.shirohoo.realworld.domain.content.CommentVO;
-import io.github.shirohoo.realworld.domain.content.Tag;
 import io.github.shirohoo.realworld.domain.content.TagRepository;
 import io.github.shirohoo.realworld.domain.user.User;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -57,60 +51,33 @@ public class ArticleService {
         Set<User> followings = me.followings();
         Pageable pageable = facets.getPageable();
 
-        Page<Article> articlePage = articleRepository.findByAuthorInOrderByCreatedAtDesc(followings, pageable);
-        List<Article> content = articlePage.getContent();
-
-        return content.stream().map(article -> new ArticleVO(me, article)).toList();
+        return articleRepository
+                .findByAuthorInOrderByCreatedAtDesc(followings, pageable)
+                .map(article -> new ArticleVO(me, article))
+                .getContent();
     }
 
     @Transactional
     public ArticleVO createArticle(User me, CreateArticleRequest request) {
-        Article article = Article.builder()
+        Article newArticle = Article.builder()
                 .author(me)
-                .slug(request.title().toLowerCase().replaceAll("\\s+", "-"))
                 .title(request.title())
                 .description(request.description())
                 .content(request.body())
+                .tags(new HashSet<>(tagRepository.saveAll(request.tags())))
                 .build();
 
-        for (String tagName : request.tagList()) {
-            tagRepository.findByName(tagName).ifPresentOrElse(article::addTag, () -> {
-                Tag tag = new Tag(tagName);
-                tagRepository.save(tag);
-                article.addTag(tag);
-            });
-        }
-
-        return new ArticleVO(me, articleRepository.save(article));
+        newArticle = articleRepository.save(newArticle);
+        return new ArticleVO(me, newArticle);
     }
 
     @Transactional
     public ArticleVO updateArticle(User me, String slug, UpdateArticleRequest request) {
-        Article article = articleRepository
+        return articleRepository
                 .findBySlug(slug)
+                .map(it -> it.update(me, request.title(), request.description(), request.body()))
+                .map(it -> new ArticleVO(me, articleRepository.save(it)))
                 .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)));
-
-        if (!article.isAuthoredBy(me)) {
-            throw new IllegalArgumentException("You cannot edit articles written by others.");
-        }
-
-        String title = request.title();
-        if (hasText(title)) {
-            article.slug(title.toLowerCase().replaceAll("\\s+", "-"));
-            article.title(title);
-        }
-
-        String description = request.description();
-        if (hasText(description)) {
-            article.description(description);
-        }
-
-        String content = request.body();
-        if (hasText(content)) {
-            article.content(content);
-        }
-
-        return new ArticleVO(me, articleRepository.save(article));
     }
 
     @Transactional

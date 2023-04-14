@@ -93,8 +93,8 @@ class ArticleServiceTest {
     @DisplayName("provides the function to create new articles.")
     void createArticle() throws Exception {
         // given
-        CreateArticleRequest request = new CreateArticleRequest(
-                "Test Title", "Test Description", "Test Body", new String[] {"java", "spring"});
+        CreateArticleRequest request =
+                new CreateArticleRequest("Test Title", "Test Description", "Test Body", List.of("test", "sample"));
 
         // when
         ArticleVO articleVO = sut.createArticle(james, request);
@@ -111,10 +111,8 @@ class ArticleServiceTest {
     @DisplayName("provides the function to edit articles.")
     void updateArticle() throws Exception {
         // given
-        String slug = "updated-title";
         Article article = Article.builder()
                 .author(james)
-                .slug(slug)
                 .title("Test Title")
                 .description("Test Description")
                 .content("Test Content")
@@ -124,7 +122,7 @@ class ArticleServiceTest {
         UpdateArticleRequest request = new UpdateArticleRequest("Updated Title", "Updated Description", "Updated Body");
 
         // when
-        ArticleVO updatedArticleVO = sut.updateArticle(james, slug, request);
+        ArticleVO updatedArticleVO = sut.updateArticle(james, "test-title", request);
 
         // then
         assertThat(updatedArticleVO.author().username()).isEqualTo(james.username());
@@ -133,8 +131,8 @@ class ArticleServiceTest {
         assertThat(updatedArticleVO.body()).isEqualTo(request.body());
 
         Article updatedArticle = articleRepository
-                .findBySlug(slug)
-                .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)));
+                .findBySlug("updated-title")
+                .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `updated-title`"));
         assertThat(updatedArticle.title()).isEqualTo(request.title());
         assertThat(updatedArticle.description()).isEqualTo(request.description());
         assertThat(updatedArticle.content()).isEqualTo(request.body());
@@ -144,10 +142,8 @@ class ArticleServiceTest {
     @DisplayName("prevents other users from editing articles written by them.")
     void updateArticleWithInvalidUser() throws Exception {
         // given
-        String slug = "test-title";
         Article article = Article.builder()
                 .author(james)
-                .slug(slug)
                 .title("Test Title")
                 .description("Test Description")
                 .content("Test Content")
@@ -157,14 +153,14 @@ class ArticleServiceTest {
         UpdateArticleRequest request = new UpdateArticleRequest("Updated Title", "Updated Description", "Updated Body");
 
         // when
-        var thrownBy = assertThatThrownBy(() -> sut.updateArticle(simpson, slug, request));
+        var thrownBy = assertThatThrownBy(() -> sut.updateArticle(simpson, "test-title", request));
 
         // then
         thrownBy.isInstanceOf(IllegalArgumentException.class).hasMessage("You cannot edit articles written by others.");
 
         Article updatedArticle = articleRepository
-                .findBySlug(slug)
-                .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)));
+                .findBySlug("test-title")
+                .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `test-title`"));
         assertThat(updatedArticle.title()).isNotEqualTo(request.title());
         assertThat(updatedArticle.description()).isNotEqualTo(request.description());
         assertThat(updatedArticle.content()).isNotEqualTo(request.body());
@@ -189,10 +185,8 @@ class ArticleServiceTest {
     @DisplayName("provides the function to delete a article.")
     void deleteArticle() throws Exception {
         // given
-        String slug = "test-article";
         Article article = Article.builder()
                 .author(james)
-                .slug(slug)
                 .title("Test Title")
                 .description("Test Description")
                 .content("Test Content")
@@ -200,20 +194,18 @@ class ArticleServiceTest {
         articleRepository.save(article);
 
         // when
-        sut.deleteArticle(james, slug);
+        sut.deleteArticle(james, "test-title");
 
         // then
-        assertThat(articleRepository.existsBySlug(slug)).isFalse();
+        assertThat(articleRepository.existsBySlug("test-title")).isFalse();
     }
 
     @Test
     @DisplayName("prevents users from deleting articles made by other users.")
     void deleteArticleWithInvalidUser() throws Exception {
         // given
-        String slug = "test-article";
         Article article = Article.builder()
                 .author(james)
-                .slug(slug)
                 .title("Test Title")
                 .description("Test Description")
                 .content("Test Content")
@@ -221,13 +213,13 @@ class ArticleServiceTest {
         articleRepository.save(article);
 
         // when
-        var thrownBy = assertThatThrownBy(() -> sut.deleteArticle(simpson, slug));
+        var thrownBy = assertThatThrownBy(() -> sut.deleteArticle(simpson, "test-title"));
 
         // then
         thrownBy.isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("You cannot delete articles written by others.");
 
-        assertThat(articleRepository.existsBySlug(slug)).isTrue();
+        assertThat(articleRepository.existsBySlug("test-title")).isTrue();
     }
 
     @Test

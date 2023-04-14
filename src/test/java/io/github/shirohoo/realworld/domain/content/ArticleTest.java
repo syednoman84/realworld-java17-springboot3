@@ -29,7 +29,6 @@ class ArticleTest {
                 .title("How to write unit tests")
                 .description("Unit testing is an essential part of software development.")
                 .content("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
-                .slug("how-to-write-unit-tests")
                 .createdAt(LocalDateTime.now())
                 .author(author)
                 .build();

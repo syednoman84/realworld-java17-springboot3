@@ -131,8 +131,7 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof User other) return Objects.equals(this.id, other.id);
-        return false;
+        return o instanceof User other && Objects.equals(this.id, other.id);
     }
 
     @Override

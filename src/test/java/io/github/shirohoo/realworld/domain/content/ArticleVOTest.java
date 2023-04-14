@@ -21,7 +21,6 @@ class ArticleVOTest {
                 .password("test-password")
                 .build();
         Article article = Article.builder()
-                .slug("test-article")
                 .title("Test Article")
                 .description("This is a test article.")
                 .content("Test content.")

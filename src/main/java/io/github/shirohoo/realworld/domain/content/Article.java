@@ -24,8 +24,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,9 +33,7 @@ import lombok.experimental.Accessors;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Accessors(fluent = true, chain = true)
 @EntityListeners(AuditingEntityListener.class)
 public class Article {
@@ -58,8 +54,6 @@ public class Article {
 
     private String content;
 
-    @Builder.Default
-    @Setter(AccessLevel.PRIVATE)
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "article_favorites",
@@ -67,8 +61,6 @@ public class Article {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> favorites = new HashSet<>();
 
-    @Builder.Default
-    @Setter(AccessLevel.PRIVATE)
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "article_tags",
@@ -81,6 +73,44 @@ public class Article {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Builder
+    public Article(
+            Integer id,
+            User author,
+            String title,
+            String description,
+            String content,
+            Set<User> favorites,
+            Set<Tag> tags,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        this.id = id;
+        this.author = author;
+        this.slug = title.toLowerCase().replaceAll("\\s+", "-");
+        this.title = title;
+        this.description = description;
+        this.content = content;
+        this.favorites = favorites == null ? new HashSet<>() : favorites;
+        this.tags = tags == null ? new HashSet<>() : tags;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Article update(User author, String title, String description, String content) {
+        if (!this.isAuthoredBy(author))
+            throw new IllegalArgumentException("You cannot edit articles written by others.");
+        if (title != null && !title.isBlank()) this.title(title);
+        if (description != null && !description.isBlank()) this.description = description;
+        if (content != null && !content.isBlank()) this.content = content;
+        return this;
+    }
+
+    public Article title(String title) {
+        this.slug = title.toLowerCase().replaceAll("\\s+", "-");
+        this.title = title;
+        return this;
+    }
 
     public Article addTag(Tag tag) {
         if (this.tags.contains(tag)) return this;
@@ -129,8 +159,7 @@ public class Article {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Article other) return Objects.equals(this.id, other.id);
-        return false;
+        return o instanceof Article other && Objects.equals(this.id, other.id);
     }
 
     @Override
