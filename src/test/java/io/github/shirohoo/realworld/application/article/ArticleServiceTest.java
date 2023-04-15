@@ -1,16 +1,19 @@
 package io.github.shirohoo.realworld.application.article;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.shirohoo.realworld.IntegrationTest;
 import io.github.shirohoo.realworld.application.article.request.CreateArticleRequest;
+import io.github.shirohoo.realworld.application.article.request.CreateCommentRequest;
 import io.github.shirohoo.realworld.application.article.request.UpdateArticleRequest;
 import io.github.shirohoo.realworld.application.article.service.ArticleService;
 import io.github.shirohoo.realworld.domain.article.*;
 import io.github.shirohoo.realworld.domain.user.User;
 import io.github.shirohoo.realworld.domain.user.UserRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -34,6 +37,9 @@ class ArticleServiceTest {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private ArticleRepository articleRepository;
@@ -230,5 +236,129 @@ class ArticleServiceTest {
         // then
         thrownBy.isInstanceOf(NoSuchElementException.class)
                 .hasMessage("Article not found by slug: `non-existing-article`");
+    }
+
+    @Test
+    @DisplayName("provides the function to create a comment.")
+    void createComment() throws Exception {
+        // given
+        Article article = Article.builder()
+                .author(james)
+                .title("Test Title")
+                .description("Test Description")
+                .content("Test Content")
+                .build();
+        articleRepository.save(article);
+
+        CreateCommentRequest request = new CreateCommentRequest("Test Comment");
+
+        // when
+        CommentVO comment = sut.createComment(james, "test-title", request);
+
+        // then
+        assertThat(comment.author().username()).isEqualTo(james.username());
+        assertThat(comment.body()).isEqualTo(request.body());
+    }
+
+    @Test
+    @DisplayName("notifies the user if the article cannot be found when creating a comment.")
+    void createCommentWithNonExistingArticle() throws Exception {
+        // given
+        CreateCommentRequest request = new CreateCommentRequest("Test Comment");
+
+        // when
+        var thrownBy = assertThatThrownBy(() -> sut.createComment(james, "non-existing-article", request));
+
+        // then
+        thrownBy.isInstanceOf(NoSuchElementException.class)
+                .hasMessage("Article not found by slug: `non-existing-article`");
+    }
+
+    @Test
+    @DisplayName("provides the function to get a article comments.")
+    void getArticleComments() throws Exception {
+        // given
+        Article article = Article.builder()
+                .author(james)
+                .title("Test Title")
+                .description("Test Description")
+                .content("Test Content")
+                .build();
+        articleRepository.save(article);
+
+        Comment comment = Comment.builder()
+                .author(simpson)
+                .content("Test Comment")
+                .article(article)
+                .build();
+        commentRepository.save(comment);
+
+        // when
+        List<CommentVO> comments = sut.getArticleComments(simpson, "test-title");
+
+        // then
+        assertThat(comments).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("provides the function to delete a comment.")
+    void deleteComment() throws Exception {
+        // given
+        Article article = Article.builder()
+                .author(james)
+                .title("Test Title")
+                .description("Test Description")
+                .content("Test Content")
+                .build();
+        articleRepository.save(article);
+
+        Comment comment =
+                Comment.builder().author(james).content("Test Comment").build();
+        commentRepository.save(comment);
+
+        // when
+        sut.deleteComment(james, comment.id());
+
+        // then
+        assertThat(commentRepository.existsById(comment.id())).isFalse();
+    }
+
+    @Test
+    @DisplayName("provides the function to favorite a article.")
+    void favoriteArticle() throws Exception {
+        // given
+        Article article = Article.builder()
+                .author(james)
+                .title("Test Title")
+                .description("Test Description")
+                .content("Test Content")
+                .build();
+        articleRepository.save(article);
+
+        // when
+        sut.favoriteArticle(simpson, article.slug());
+
+        // then
+        assertThat(article.favorites()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("provides the function to unfavorite a article.")
+    void unfavoriteArticle() throws Exception {
+        // given
+        Article article = Article.builder()
+                .author(james)
+                .title("Test Title")
+                .description("Test Description")
+                .content("Test Content")
+                .favorites(new HashSet<>(singletonList(simpson)))
+                .build();
+        articleRepository.save(article);
+
+        // when
+        sut.unfavoriteArticle(simpson, article.slug());
+
+        // then
+        assertThat(article.favorites()).hasSize(0);
     }
 }
