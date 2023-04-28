@@ -7,18 +7,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -98,11 +87,22 @@ public class Article {
     }
 
     public Article update(User author, String title, String description, String content) {
-        if (!this.isAuthoredBy(author))
+        if (!this.isAuthoredBy(author)) {
             throw new IllegalArgumentException("You cannot edit articles written by others.");
-        if (title != null && !title.isBlank()) this.title(title);
-        if (description != null && !description.isBlank()) this.description = description;
-        if (content != null && !content.isBlank()) this.content = content;
+        }
+
+        if (title != null && !title.isBlank()) {
+            this.title(title);
+        }
+
+        if (description != null && !description.isBlank()) {
+            this.description = description;
+        }
+
+        if (content != null && !content.isBlank()) {
+            this.content = content;
+        }
+
         return this;
     }
 
@@ -113,23 +113,35 @@ public class Article {
     }
 
     public Article addTag(Tag tag) {
-        if (this.tags.contains(tag)) return this;
+        if (this.tags.contains(tag)) {
+            return this;
+        }
+
         this.tags.add(tag);
         tag.addTag(this);
+
         return this;
     }
 
     public Article favoritedBy(User user) {
-        if (this.favorites.contains(user)) return this;
+        if (this.favorites.contains(user)) {
+            return this;
+        }
+
         this.favorites.add(user);
         user.favorite(this);
+
         return this;
     }
 
     public Article unfavoritedBy(User user) {
-        if (!this.favorites.contains(user)) return this;
+        if (!this.favorites.contains(user)) {
+            return this;
+        }
+
         this.favorites.remove(user);
         user.unfavorite(this);
+
         return this;
     }
 

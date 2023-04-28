@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
-public class InterceptorExceptionHandler extends ResponseEntityExceptionHandler {
+public class ExceptionHandleInterceptor extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handle(IllegalArgumentException e) {
         log.info("Illegal argument: {}", e.getMessage());

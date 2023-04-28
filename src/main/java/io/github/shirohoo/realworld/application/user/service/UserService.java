@@ -1,9 +1,9 @@
 package io.github.shirohoo.realworld.application.user.service;
 
 import io.github.shirohoo.realworld.application.config.BearerTokenProvider;
-import io.github.shirohoo.realworld.application.user.request.LoginUserRequest;
-import io.github.shirohoo.realworld.application.user.request.SignUpUserRequest;
-import io.github.shirohoo.realworld.application.user.request.UpdateUserRequest;
+import io.github.shirohoo.realworld.application.user.controller.LoginUserRequest;
+import io.github.shirohoo.realworld.application.user.controller.SignUpUserRequest;
+import io.github.shirohoo.realworld.application.user.controller.UpdateUserRequest;
 import io.github.shirohoo.realworld.domain.user.User;
 import io.github.shirohoo.realworld.domain.user.UserRepository;
 import io.github.shirohoo.realworld.domain.user.UserVO;

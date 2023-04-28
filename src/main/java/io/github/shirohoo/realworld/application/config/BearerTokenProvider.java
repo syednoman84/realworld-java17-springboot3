@@ -10,7 +10,9 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class BearerTokenProvider {
@@ -26,6 +28,8 @@ public class BearerTokenProvider {
                 .build();
 
         JwtEncoderParameters parameters = JwtEncoderParameters.from(claimsSet);
-        return jwtEncoder.encode(parameters).getTokenValue();
+        String token = jwtEncoder.encode(parameters).getTokenValue();
+        log.info("User id `{}` Bearer Token generated: `{}`", user.id(), token);
+        return token;
     }
 }

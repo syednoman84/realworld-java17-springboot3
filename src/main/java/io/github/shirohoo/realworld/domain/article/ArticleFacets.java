@@ -8,6 +8,7 @@ public record ArticleFacets(String tag, String author, String favorited, int off
         if (offset < 0) {
             offset = 0;
         }
+
         if (limit < 0 || limit > 100) {
             limit = 20;
         }

@@ -8,28 +8,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 @Entity
@@ -82,37 +66,54 @@ public class User {
     @Transient
     private String token;
 
-    public static ProfileVO retrievesProfile(User me, User to) {
-        if (me == null) return new ProfileVO(null, to);
-        return new ProfileVO(me, to);
+    public static ProfileVO retrievesProfile(User me, User target) {
+        if (me == null) {
+            return new ProfileVO(null, target);
+        }
+
+        return new ProfileVO(me, target);
     }
 
-    public ProfileVO follow(User to) {
-        if (this.followings.contains(to)) return new ProfileVO(this, to);
-        this.followings.add(to);
-        to.followers.add(this);
-        return User.retrievesProfile(this, to);
+    public ProfileVO follow(User target) {
+        if (this.followings.contains(target)) {
+            return new ProfileVO(this, target);
+        }
+
+        this.followings.add(target);
+        target.followers.add(this);
+
+        return User.retrievesProfile(this, target);
     }
 
-    public ProfileVO unfollow(User to) {
-        if (!this.followings.contains(to)) return new ProfileVO(this, to);
-        this.followings.remove(to);
-        to.followers.remove(this);
-        return User.retrievesProfile(this, to);
+    public ProfileVO unfollow(User target) {
+        if (!this.followings.contains(target)) {
+            return new ProfileVO(this, target);
+        }
+
+        this.followings.remove(target);
+        target.followers.remove(this);
+
+        return User.retrievesProfile(this, target);
     }
 
-    public boolean isFollowing(User to) {
-        return this.followings.contains(to);
+    public boolean isFollowing(User target) {
+        return this.followings.contains(target);
     }
 
     public void favorite(Article article) {
-        if (this.favoritedArticles.contains(article)) return;
+        if (this.favoritedArticles.contains(article)) {
+            return;
+        }
+
         this.favoritedArticles.add(article);
         article.favoritedBy(this);
     }
 
     public void unfavorite(Article article) {
-        if (!this.favoritedArticles.contains(article)) return;
+        if (!this.favoritedArticles.contains(article)) {
+            return;
+        }
+
         this.favoritedArticles.remove(article);
         article.unfavoritedBy(this);
     }

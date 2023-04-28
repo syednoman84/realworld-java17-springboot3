@@ -8,11 +8,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.github.shirohoo.realworld.IntegrationTest;
-import io.github.shirohoo.realworld.application.article.request.CreateArticleRequest;
-import io.github.shirohoo.realworld.application.article.request.CreateCommentRequest;
-import io.github.shirohoo.realworld.application.article.request.UpdateArticleRequest;
-import io.github.shirohoo.realworld.application.user.request.LoginUserRequest;
-import io.github.shirohoo.realworld.application.user.request.SignUpUserRequest;
+import io.github.shirohoo.realworld.application.article.controller.CreateArticleRequest;
+import io.github.shirohoo.realworld.application.article.controller.CreateCommentRequest;
+import io.github.shirohoo.realworld.application.article.controller.UpdateArticleRequest;
+import io.github.shirohoo.realworld.application.user.controller.LoginUserRequest;
+import io.github.shirohoo.realworld.application.user.controller.SignUpUserRequest;
 import io.github.shirohoo.realworld.application.user.service.UserService;
 import io.github.shirohoo.realworld.domain.article.Article;
 import io.github.shirohoo.realworld.domain.article.ArticleRepository;

@@ -1,4 +1,4 @@
-package io.github.shirohoo.realworld.application.user.request;
+package io.github.shirohoo.realworld.application.user.controller;
 
 import io.github.shirohoo.realworld.domain.user.User;
 

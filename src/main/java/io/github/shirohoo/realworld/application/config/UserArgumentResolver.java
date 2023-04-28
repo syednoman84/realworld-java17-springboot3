@@ -6,7 +6,6 @@ import io.github.shirohoo.realworld.domain.user.UserRepository;
 import java.util.UUID;
 
 import org.springframework.core.MethodParameter;
-import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -31,16 +30,14 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(
-            @NonNull MethodParameter parameter,
+            MethodParameter parameter,
             ModelAndViewContainer mavContainer,
-            @NonNull NativeWebRequest webRequest,
+            NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
 
-        if (authentication instanceof AnonymousAuthenticationToken) {
-            return null;
-        }
+        if (authentication instanceof AnonymousAuthenticationToken) return null;
 
         JwtAuthenticationToken jwt = (JwtAuthenticationToken) authentication;
         String userId = jwt.getName();

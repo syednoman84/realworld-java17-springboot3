@@ -4,12 +4,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,7 +34,10 @@ public class Tag {
     }
 
     public void addTag(Article article) {
-        if (this.articles.contains(article)) return;
+        if (this.articles.contains(article)) {
+            return;
+        }
+
         this.articles.add(article);
         article.addTag(this);
     }

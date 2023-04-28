@@ -2,10 +2,6 @@ package io.github.shirohoo.realworld.application.user.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-import io.github.shirohoo.realworld.application.user.request.LoginUserRequest;
-import io.github.shirohoo.realworld.application.user.request.SignUpUserRequest;
-import io.github.shirohoo.realworld.application.user.request.UpdateUserRequest;
-import io.github.shirohoo.realworld.application.user.response.UserResponse;
 import io.github.shirohoo.realworld.application.user.service.UserService;
 import io.github.shirohoo.realworld.domain.user.User;
 import io.github.shirohoo.realworld.domain.user.UserVO;
@@ -15,12 +11,7 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
@@ -35,6 +26,7 @@ public class UserController {
     public ModelAndView signUp(@RequestBody SignUpUserRequest request, HttpServletRequest httpServletRequest) {
         userService.signUp(request);
 
+        // Redirect to login API to automatically login when signup is complete
         LoginUserRequest loginRequest = new LoginUserRequest(request.email(), request.password());
         httpServletRequest.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
         return new ModelAndView("redirect:/api/users/login", "user", Map.of("user", loginRequest));

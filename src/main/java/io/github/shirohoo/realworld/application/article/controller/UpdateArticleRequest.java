@@ -1,4 +1,4 @@
-package io.github.shirohoo.realworld.application.article.request;
+package io.github.shirohoo.realworld.application.article.controller;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 

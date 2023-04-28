@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.shirohoo.realworld.IntegrationTest;
-import io.github.shirohoo.realworld.application.article.request.CreateArticleRequest;
-import io.github.shirohoo.realworld.application.article.request.CreateCommentRequest;
-import io.github.shirohoo.realworld.application.article.request.UpdateArticleRequest;
+import io.github.shirohoo.realworld.application.article.controller.CreateArticleRequest;
+import io.github.shirohoo.realworld.application.article.controller.CreateCommentRequest;
+import io.github.shirohoo.realworld.application.article.controller.UpdateArticleRequest;
 import io.github.shirohoo.realworld.application.article.service.ArticleService;
 import io.github.shirohoo.realworld.domain.article.*;
 import io.github.shirohoo.realworld.domain.user.User;

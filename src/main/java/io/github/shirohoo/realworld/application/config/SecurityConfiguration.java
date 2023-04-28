@@ -41,7 +41,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 @EnableMethodSecurity
 public class SecurityConfiguration {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, FilterExceptionHandler filterExceptionHandler)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ExceptionHandleFilter exceptionHandleFilter)
             throws Exception {
         return http.httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -65,7 +65,7 @@ public class SecurityConfiguration {
                 .exceptionHandling(
                         handler -> handler.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                                 .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
-                .addFilterBefore(filterExceptionHandler, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(exceptionHandleFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -102,6 +102,6 @@ public class SecurityConfiguration {
 
     @Bean
     public BearerTokenResolver bearerTokenResolver() {
-        return new CustomBearerTokenResolver();
+        return new CustomPrefixBearerTokenResolver();
     }
 }

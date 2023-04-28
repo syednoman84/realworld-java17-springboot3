@@ -3,7 +3,6 @@ package io.github.shirohoo.realworld.application.config;
 import java.io.IOException;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -21,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FilterExceptionHandler extends OncePerRequestFilter {
+public class ExceptionHandleFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     @Override
@@ -29,7 +28,7 @@ public class FilterExceptionHandler extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+            throws IOException {
         try {
             filterChain.doFilter(request, response);
 

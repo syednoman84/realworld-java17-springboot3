@@ -1,12 +1,5 @@
 package io.github.shirohoo.realworld.application.article.controller;
 
-import io.github.shirohoo.realworld.application.article.request.CreateArticleRequest;
-import io.github.shirohoo.realworld.application.article.request.CreateCommentRequest;
-import io.github.shirohoo.realworld.application.article.request.UpdateArticleRequest;
-import io.github.shirohoo.realworld.application.article.response.MultipleArticlesResponse;
-import io.github.shirohoo.realworld.application.article.response.MultipleCommentsResponse;
-import io.github.shirohoo.realworld.application.article.response.SingleArticleResponse;
-import io.github.shirohoo.realworld.application.article.response.SingleCommentResponse;
 import io.github.shirohoo.realworld.application.article.service.ArticleService;
 import io.github.shirohoo.realworld.domain.article.ArticleFacets;
 import io.github.shirohoo.realworld.domain.article.ArticleVO;
@@ -15,14 +8,8 @@ import io.github.shirohoo.realworld.domain.user.User;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
@@ -68,6 +55,7 @@ public class ArticleController {
         articleService.deleteArticle(me, slug);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/api/articles/feed")
     public MultipleArticlesResponse getFeedArticles(
             User me,

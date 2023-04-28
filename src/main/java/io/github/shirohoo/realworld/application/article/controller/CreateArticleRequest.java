@@ -1,6 +1,6 @@
-package io.github.shirohoo.realworld.application.article.request;
+package io.github.shirohoo.realworld.application.article.controller;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toSet;
 
 import io.github.shirohoo.realworld.domain.article.Tag;
 

@@ -5,8 +5,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import io.github.shirohoo.realworld.IntegrationTest;
-import io.github.shirohoo.realworld.application.user.request.LoginUserRequest;
-import io.github.shirohoo.realworld.application.user.request.SignUpUserRequest;
+import io.github.shirohoo.realworld.application.user.controller.LoginUserRequest;
+import io.github.shirohoo.realworld.application.user.controller.SignUpUserRequest;
 import io.github.shirohoo.realworld.application.user.service.UserService;
 
 import org.junit.jupiter.api.BeforeEach;

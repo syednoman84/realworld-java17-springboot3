@@ -1,22 +1,18 @@
 package io.github.shirohoo.realworld.application.article.service;
 
-import io.github.shirohoo.realworld.application.article.request.CreateArticleRequest;
-import io.github.shirohoo.realworld.application.article.request.CreateCommentRequest;
-import io.github.shirohoo.realworld.application.article.request.UpdateArticleRequest;
-import io.github.shirohoo.realworld.domain.article.Article;
-import io.github.shirohoo.realworld.domain.article.ArticleFacets;
-import io.github.shirohoo.realworld.domain.article.ArticleRepository;
-import io.github.shirohoo.realworld.domain.article.ArticleVO;
-import io.github.shirohoo.realworld.domain.article.Comment;
-import io.github.shirohoo.realworld.domain.article.CommentRepository;
-import io.github.shirohoo.realworld.domain.article.CommentVO;
-import io.github.shirohoo.realworld.domain.article.TagRepository;
+import io.github.shirohoo.realworld.application.article.controller.CreateArticleRequest;
+import io.github.shirohoo.realworld.application.article.controller.CreateCommentRequest;
+import io.github.shirohoo.realworld.application.article.controller.UpdateArticleRequest;
+import io.github.shirohoo.realworld.domain.article.*;
 import io.github.shirohoo.realworld.domain.user.User;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,12 +40,13 @@ public class ArticleService {
         String favorited = facets.favorited();
         Pageable pageable = facets.getPageable();
 
-        return articleRepository.findByFacets(tag, author, favorited, pageable).getContent().stream()
+        Page<Article> byFacets = articleRepository.findByFacets(tag, author, favorited, pageable);
+        return byFacets.getContent().stream()
                 .map(article -> new ArticleVO(me, article))
                 .toList();
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @Transactional(readOnly = true)
     public List<ArticleVO> getFeedArticles(User me, ArticleFacets facets) {
         Set<User> followings = me.followings();
         Pageable pageable = facets.getPageable();
