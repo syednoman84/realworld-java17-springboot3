@@ -17,7 +17,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class ObjectMapperConfiguration {
     @Bean
     public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-        return builder.modules(iso8601Serializer())
+        return builder.modules(iso8601SerializeModule())
                 .featuresToEnable(DeserializationFeature.UNWRAP_ROOT_VALUE)
                 .featuresToDisable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -25,7 +25,7 @@ public class ObjectMapperConfiguration {
                 .build();
     }
 
-    private Module iso8601Serializer() {
+    private Module iso8601SerializeModule() {
         return new JavaTimeModule().addSerializer(LocalDateTime.class, new JsonSerializer<>() {
             @Override
             public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers)

@@ -15,10 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class BearerTokenProvider {
+public class BearerTokenSupplier {
     private final JwtEncoder jwtEncoder;
 
-    public String provide(User user) {
+    public String supply(User user) {
         Instant now = Instant.now();
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer("https://realworld.io")

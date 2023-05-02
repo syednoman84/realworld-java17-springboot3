@@ -37,7 +37,9 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
 
-        if (authentication instanceof AnonymousAuthenticationToken) return null;
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
 
         JwtAuthenticationToken jwt = (JwtAuthenticationToken) authentication;
         String userId = jwt.getName();

@@ -1,6 +1,6 @@
 package io.github.shirohoo.realworld.application.user.service;
 
-import io.github.shirohoo.realworld.application.config.BearerTokenProvider;
+import io.github.shirohoo.realworld.application.config.BearerTokenSupplier;
 import io.github.shirohoo.realworld.application.user.controller.LoginUserRequest;
 import io.github.shirohoo.realworld.application.user.controller.SignUpUserRequest;
 import io.github.shirohoo.realworld.application.user.controller.UpdateUserRequest;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final BearerTokenProvider bearerTokenProvider;
+    private final BearerTokenSupplier bearerTokenSupplier;
 
     @Transactional
     public User signUp(SignUpUserRequest request) {
@@ -47,7 +47,7 @@ public class UserService {
                 .findByEmail(request.email())
                 .filter(user -> passwordEncoder.matches(request.password(), user.password()))
                 .map(user -> {
-                    String token = bearerTokenProvider.provide(user);
+                    String token = bearerTokenSupplier.supply(user);
                     return new UserVO(user.token(token));
                 })
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
