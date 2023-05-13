@@ -5,11 +5,12 @@ import io.github.shirohoo.realworld.application.article.controller.CreateComment
 import io.github.shirohoo.realworld.application.article.controller.UpdateArticleRequest;
 import io.github.shirohoo.realworld.domain.article.*;
 import io.github.shirohoo.realworld.domain.user.User;
+import io.github.shirohoo.realworld.domain.user.UserRepository;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ArticleService {
     private final TagRepository tagRepository;
+    private final UserRepository userRepository;
     private final ArticleRepository articleRepository;
     private final CommentRepository commentRepository;
 
@@ -48,7 +50,7 @@ public class ArticleService {
 
     @Transactional(readOnly = true)
     public List<ArticleVO> getFeedArticles(User me, ArticleFacets facets) {
-        Set<User> followings = me.followings();
+        List<User> followings = userRepository.findByFollowers(me);
         Pageable pageable = facets.getPageable();
 
         return articleRepository
@@ -86,8 +88,8 @@ public class ArticleService {
                 .findBySlug(slug)
                 .ifPresentOrElse(
                         article -> {
-                            if (article.isAuthoredBy(me)) articleRepository.delete(article);
-                            else throw new IllegalArgumentException("You cannot delete articles written by others.");
+                            if (article.isWritten(me)) articleRepository.delete(article);
+                            else throw new IllegalArgumentException("You can't delete articles written by others.");
                         },
                         () -> {
                             throw new NoSuchElementException("Article not found by slug: `%s`".formatted(slug));
@@ -110,8 +112,8 @@ public class ArticleService {
 
     @Transactional
     public List<CommentVO> getArticleComments(User me, String slug) {
-        return articleRepository
-                .findBySlug(slug)
+        Optional<Article> bySlug = articleRepository.findBySlug(slug);
+        return bySlug
                 .map(commentRepository::findByArticleOrderByCreatedAtDesc)
                 .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)))
                 .stream()
@@ -125,7 +127,7 @@ public class ArticleService {
                 .findById(commentId)
                 .ifPresentOrElse(
                         comment -> {
-                            if (comment.isAuthoredBy(me)) commentRepository.delete(comment);
+                            if (comment.isWritten(me)) commentRepository.delete(comment);
                             else throw new IllegalArgumentException("You cannot delete comments written by others.");
                         },
                         () -> {
@@ -137,7 +139,7 @@ public class ArticleService {
     public ArticleVO favoriteArticle(User me, String slug) {
         return articleRepository
                 .findBySlug(slug)
-                .map(article -> new ArticleVO(me, article.favoritedBy(me)))
+                .map(article -> new ArticleVO(me, article.favorite(me)))
                 .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)));
     }
 
@@ -145,7 +147,7 @@ public class ArticleService {
     public ArticleVO unfavoriteArticle(User me, String slug) {
         return articleRepository
                 .findBySlug(slug)
-                .map(article -> new ArticleVO(me, article.unfavoritedBy(me)))
+                .map(article -> new ArticleVO(me, article.unfavorite(me)))
                 .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)));
     }
 }

@@ -17,14 +17,14 @@ class TagTest {
                 .description("This is a test article.")
                 .content("Lorem ipsum dolor sit amet.")
                 .build();
-        Tag tag = new Tag("test-tag");
+        Tag java = new Tag("java");
 
         // when
-        tag.addTag(article);
+        java.tag(article);
 
         // then
-        assertThat(tag.articles()).containsOnly(article);
-        assertThat(article.tags()).containsOnly("test-tag");
+        assertThat(article.isTaggedBy(java)).isTrue();
+        assertThat(java.isTagged(article)).isTrue();
     }
 
     @Test

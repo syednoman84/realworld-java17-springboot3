@@ -56,11 +56,11 @@ public class User {
     private Set<User> followings = new HashSet<>();
 
     @Builder.Default
-    @ManyToMany(mappedBy = "followings", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "followings")
     private final Set<User> followers = new HashSet<>();
 
     @Builder.Default
-    @ManyToMany(mappedBy = "favorites", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "favorites")
     private final Set<Article> favoritedArticles = new HashSet<>();
 
     @Transient
@@ -100,13 +100,17 @@ public class User {
         return this.followings.contains(target);
     }
 
+    public boolean hasFollower(User target) {
+        return this.followers.contains(target);
+    }
+
     public void favorite(Article article) {
         if (this.favoritedArticles.contains(article)) {
             return;
         }
 
         this.favoritedArticles.add(article);
-        article.favoritedBy(this);
+        article.favorite(this);
     }
 
     public void unfavorite(Article article) {
@@ -115,19 +119,11 @@ public class User {
         }
 
         this.favoritedArticles.remove(article);
-        article.unfavoritedBy(this);
+        article.unfavorite(this);
     }
 
-    public Set<User> followings() {
-        return Set.copyOf(this.followings);
-    }
-
-    public Set<User> followers() {
-        return Set.copyOf(this.followers);
-    }
-
-    public Set<Article> favoritedArticles() {
-        return Set.copyOf(this.favoritedArticles);
+    public boolean hasFavorite(Article article) {
+        return this.favoritedArticles.contains(article);
     }
 
     @Override

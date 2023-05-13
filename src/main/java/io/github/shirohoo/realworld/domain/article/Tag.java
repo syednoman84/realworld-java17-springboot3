@@ -33,13 +33,17 @@ public class Tag {
         this.name = name;
     }
 
-    public void addTag(Article article) {
-        if (this.articles.contains(article)) {
+    public void tag(Article article) {
+        if (this.isTagged(article)) {
             return;
         }
 
         this.articles.add(article);
         article.addTag(this);
+    }
+
+    public boolean isTagged(Article article) {
+        return this.articles.contains(article);
     }
 
     @Override

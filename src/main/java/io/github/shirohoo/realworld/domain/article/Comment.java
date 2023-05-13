@@ -41,7 +41,7 @@ public class Comment {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public boolean isAuthoredBy(User user) {
+    public boolean isWritten(User user) {
         return this.author.equals(user);
     }
 

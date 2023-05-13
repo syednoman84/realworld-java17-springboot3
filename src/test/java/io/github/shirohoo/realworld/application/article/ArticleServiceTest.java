@@ -1,8 +1,8 @@
 package io.github.shirohoo.realworld.application.article;
 
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 import io.github.shirohoo.realworld.IntegrationTest;
 import io.github.shirohoo.realworld.application.article.controller.CreateArticleRequest;
@@ -13,7 +13,6 @@ import io.github.shirohoo.realworld.domain.article.*;
 import io.github.shirohoo.realworld.domain.user.User;
 import io.github.shirohoo.realworld.domain.user.UserRepository;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -44,51 +43,48 @@ class ArticleServiceTest {
     @Autowired
     private ArticleRepository articleRepository;
 
+    private Article effectiveJava;
     private User james;
     private User simpson;
-
-    static Stream<Arguments> getArticles() {
-        return Stream.of(
-                Arguments.of(new ArticleFacets("java", null, null, 0, 20)),
-                Arguments.of(new ArticleFacets(null, "james", null, 0, 20)),
-                Arguments.of(new ArticleFacets(null, null, "simpson", 0, 20)),
-                Arguments.of(new ArticleFacets("java", "james", "simpson", 0, 20)));
-    }
 
     @BeforeEach
     void setUp() throws Exception {
         james = User.builder()
                 .email("james@gmail.com")
                 .username("james")
-                .password("1234")
+                .password("password")
                 .build();
         userRepository.save(james);
 
         simpson = User.builder()
                 .email("simpson@gmail.com")
                 .username("simpson")
-                .password("1234")
+                .password("password")
                 .build();
-        userRepository.save(james);
+        userRepository.save(simpson);
 
         Tag java = new Tag("java");
         tagRepository.save(java);
 
-        Article effectiveJava = Article.builder()
-                .title("Effective Java")
-                .author(james)
-                .build()
-                .addTag(java)
-                .favoritedBy(simpson);
+        effectiveJava =
+                Article.builder().title("Effective Java").author(james).build().addTag(java);
         articleRepository.save(effectiveJava);
     }
 
     @MethodSource
     @ParameterizedTest
     @DisplayName("provides a function to search articles under specific conditions.")
-    void getArticles(ArticleFacets facets) throws Exception {
+    void getArticles(ArticleFacets facets, int size) throws Exception {
         List<ArticleVO> articles = sut.getArticles(james, facets);
-        assertThat(articles).hasSize(1).extracting(ArticleVO::title).containsExactly("Effective Java");
+        assertThat(articles).hasSize(size);
+    }
+
+    static Stream<Arguments> getArticles() {
+        return Stream.of(
+                arguments(new ArticleFacets("java", null, null, 0, 20), 1),
+                arguments(new ArticleFacets(null, "james", null, 0, 20), 1),
+                arguments(new ArticleFacets(null, null, "simpson", 0, 20), 0),
+                arguments(new ArticleFacets("java", "james", "simpson", 0, 20), 0));
     }
 
     @Test
@@ -144,25 +140,17 @@ class ArticleServiceTest {
     @DisplayName("prevents other users from editing articles written by them.")
     void updateArticleWithInvalidUser() throws Exception {
         // given
-        Article article = Article.builder()
-                .author(james)
-                .title("Test Title")
-                .description("Test Description")
-                .content("Test Content")
-                .build();
-        articleRepository.save(article);
-
         UpdateArticleRequest request = new UpdateArticleRequest("Updated Title", "Updated Description", "Updated Body");
 
         // when
-        var thrownBy = assertThatThrownBy(() -> sut.updateArticle(simpson, "test-title", request));
+        var thrownBy = assertThatThrownBy(() -> sut.updateArticle(simpson, "effective-java", request));
 
         // then
-        thrownBy.isInstanceOf(IllegalArgumentException.class).hasMessage("You cannot edit articles written by others.");
+        thrownBy.isInstanceOf(IllegalArgumentException.class).hasMessage("You can't edit articles written by others.");
 
         Article updatedArticle = articleRepository
-                .findBySlug("test-title")
-                .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `test-title`"));
+                .findBySlug("effective-java")
+                .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `effective-java`"));
         assertThat(updatedArticle.title()).isNotEqualTo(request.title());
         assertThat(updatedArticle.description()).isNotEqualTo(request.description());
         assertThat(updatedArticle.content()).isNotEqualTo(request.body());
@@ -186,42 +174,24 @@ class ArticleServiceTest {
     @Test
     @DisplayName("provides the function to delete a article.")
     void deleteArticle() throws Exception {
-        // given
-        Article article = Article.builder()
-                .author(james)
-                .title("Test Title")
-                .description("Test Description")
-                .content("Test Content")
-                .build();
-        articleRepository.save(article);
-
         // when
-        sut.deleteArticle(james, "test-title");
+        sut.deleteArticle(james, "effective-java");
 
         // then
-        assertThat(articleRepository.existsBySlug("test-title")).isFalse();
+        assertThat(articleRepository.existsBySlug("effective-java")).isFalse();
     }
 
     @Test
     @DisplayName("prevents users from deleting articles made by other users.")
     void deleteArticleWithInvalidUser() throws Exception {
-        // given
-        Article article = Article.builder()
-                .author(james)
-                .title("Test Title")
-                .description("Test Description")
-                .content("Test Content")
-                .build();
-        articleRepository.save(article);
-
         // when
-        var thrownBy = assertThatThrownBy(() -> sut.deleteArticle(simpson, "test-title"));
+        var thrownBy = assertThatThrownBy(() -> sut.deleteArticle(simpson, "effective-java"));
 
         // then
         thrownBy.isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("You cannot delete articles written by others.");
+                .hasMessage("You can't delete articles written by others.");
 
-        assertThat(articleRepository.existsBySlug("test-title")).isTrue();
+        assertThat(articleRepository.existsBySlug("effective-java")).isTrue();
     }
 
     @Test
@@ -242,18 +212,10 @@ class ArticleServiceTest {
     @DisplayName("provides the function to create a comment.")
     void createComment() throws Exception {
         // given
-        Article article = Article.builder()
-                .author(james)
-                .title("Test Title")
-                .description("Test Description")
-                .content("Test Content")
-                .build();
-        articleRepository.save(article);
-
         CreateCommentRequest request = new CreateCommentRequest("Test Comment");
 
         // when
-        CommentVO comment = sut.createComment(james, "test-title", request);
+        CommentVO comment = sut.createComment(james, "effective-java", request);
 
         // then
         assertThat(comment.author().username()).isEqualTo(james.username());
@@ -278,23 +240,15 @@ class ArticleServiceTest {
     @DisplayName("provides the function to get a article comments.")
     void getArticleComments() throws Exception {
         // given
-        Article article = Article.builder()
-                .author(james)
-                .title("Test Title")
-                .description("Test Description")
-                .content("Test Content")
-                .build();
-        articleRepository.save(article);
-
         Comment comment = Comment.builder()
                 .author(simpson)
                 .content("Test Comment")
-                .article(article)
+                .article(effectiveJava)
                 .build();
-        commentRepository.save(comment);
+        commentRepository.saveAndFlush(comment);
 
         // when
-        List<CommentVO> comments = sut.getArticleComments(simpson, "test-title");
+        List<CommentVO> comments = sut.getArticleComments(simpson, "effective-java");
 
         // then
         assertThat(comments).hasSize(1);
@@ -326,39 +280,20 @@ class ArticleServiceTest {
     @Test
     @DisplayName("provides the function to favorite a article.")
     void favoriteArticle() throws Exception {
-        // given
-        Article article = Article.builder()
-                .author(james)
-                .title("Test Title")
-                .description("Test Description")
-                .content("Test Content")
-                .build();
-        articleRepository.save(article);
-
         // when
-        sut.favoriteArticle(simpson, article.slug());
+        sut.favoriteArticle(simpson, effectiveJava.slug());
 
         // then
-        assertThat(article.favorites()).hasSize(1);
+        assertThat(effectiveJava.favoriteCount()).isEqualTo(1);
     }
 
     @Test
     @DisplayName("provides the function to unfavorite a article.")
     void unfavoriteArticle() throws Exception {
-        // given
-        Article article = Article.builder()
-                .author(james)
-                .title("Test Title")
-                .description("Test Description")
-                .content("Test Content")
-                .favorites(new HashSet<>(singletonList(simpson)))
-                .build();
-        articleRepository.save(article);
-
         // when
-        sut.unfavoriteArticle(simpson, article.slug());
+        sut.unfavoriteArticle(simpson, effectiveJava.slug());
 
         // then
-        assertThat(article.favorites()).hasSize(0);
+        assertThat(effectiveJava.favoriteCount()).isEqualTo(0);
     }
 }

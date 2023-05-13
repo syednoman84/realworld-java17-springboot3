@@ -73,7 +73,7 @@ class ArticleControllerTest {
                 .title("Effective Java")
                 .author(james)
                 .addTag(java)
-                .favoritedBy(simpson);
+                .favorite(simpson);
         articleRepository.save(effectiveJava);
 
         LoginUserRequest jamesLoginRequest = new LoginUserRequest("james@gmail.com", "1234");

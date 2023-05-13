@@ -45,7 +45,7 @@ class ArticleTest {
 
         // then
         assertThat(article.isTaggedBy(tag)).isTrue();
-        assertThat(tag.articles()).contains(article);
+        assertThat(tag.isTagged(article)).isTrue();
     }
 
     @Test
@@ -62,8 +62,9 @@ class ArticleTest {
         article.addTag(junit);
 
         // then
-        String[] tagList = article.tags();
-        assertThat(tagList).containsExactly("java", "junit", "spring");
+        assertThat(article.isTaggedBy(java)).isTrue();
+        assertThat(article.isTaggedBy(spring)).isTrue();
+        assertThat(article.isTaggedBy(junit)).isTrue();
     }
 
     @Test
@@ -80,12 +81,12 @@ class ArticleTest {
                 .build();
 
         // when
-        article.favoritedBy(alice);
+        article.favorite(alice);
 
         // then
-        assertThat(article.hasFavorited(alice)).isTrue();
-        assertThat(article.favoritesCount()).isEqualTo(1);
-        assertThat(alice.favoritedArticles()).contains(article);
+        assertThat(article.isFavoriteBy(alice)).isTrue();
+        assertThat(article.favoriteCount()).isEqualTo(1);
+        assertThat(alice.hasFavorite(article)).isTrue();
     }
 
     @Test
@@ -100,14 +101,14 @@ class ArticleTest {
                 .image("https://i.pravatar.cc/150?img=1")
                 .createdAt(LocalDateTime.now())
                 .build();
-        article.favoritedBy(alice);
+        article.favorite(alice);
 
         // when
-        article.unfavoritedBy(alice);
+        article.unfavorite(alice);
 
         // then
-        assertThat(article.hasFavorited(alice)).isFalse();
-        assertThat(article.favoritesCount()).isZero();
-        assertThat(alice.favoritedArticles()).isEmpty();
+        assertThat(article.isFavoriteBy(alice)).isFalse();
+        assertThat(article.favoriteCount()).isZero();
+        assertThat(alice.hasFavorite(article)).isFalse();
     }
 }

@@ -87,8 +87,8 @@ public class Article {
     }
 
     public Article update(User author, String title, String description, String content) {
-        if (!this.isAuthoredBy(author)) {
-            throw new IllegalArgumentException("You cannot edit articles written by others.");
+        if (!this.isWritten(author)) {
+            throw new IllegalArgumentException("You can't edit articles written by others.");
         }
 
         if (title != null && !title.isBlank()) {
@@ -118,12 +118,12 @@ public class Article {
         }
 
         this.tags.add(tag);
-        tag.addTag(this);
+        tag.tag(this);
 
         return this;
     }
 
-    public Article favoritedBy(User user) {
+    public Article favorite(User user) {
         if (this.favorites.contains(user)) {
             return this;
         }
@@ -134,7 +134,7 @@ public class Article {
         return this;
     }
 
-    public Article unfavoritedBy(User user) {
+    public Article unfavorite(User user) {
         if (!this.favorites.contains(user)) {
             return this;
         }
@@ -145,11 +145,11 @@ public class Article {
         return this;
     }
 
-    public boolean hasFavorited(User user) {
+    public boolean isFavoriteBy(User user) {
         return this.favorites.contains(user);
     }
 
-    public boolean isAuthoredBy(User user) {
+    public boolean isWritten(User user) {
         return this.author.equals(user);
     }
 
@@ -157,16 +157,12 @@ public class Article {
         return this.tags.contains(tag);
     }
 
-    public int favoritesCount() {
+    public int favoriteCount() {
         return this.favorites.size();
     }
 
     public String[] tags() {
         return this.tags.stream().map(Tag::name).sorted().toArray(String[]::new);
-    }
-
-    public Set<User> favorites() {
-        return Set.copyOf(this.favorites);
     }
 
     @Override

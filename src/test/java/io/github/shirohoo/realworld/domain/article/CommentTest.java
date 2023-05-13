@@ -26,7 +26,7 @@ class CommentTest {
                 .build();
 
         // when
-        boolean result = comment.isAuthoredBy(author);
+        boolean result = comment.isWritten(author);
 
         // then
         assertThat(result).isTrue();
@@ -47,7 +47,7 @@ class CommentTest {
                 .build();
 
         // when
-        boolean result = comment.isAuthoredBy(anotherUser);
+        boolean result = comment.isWritten(anotherUser);
 
         // then
         assertThat(result).isFalse();
