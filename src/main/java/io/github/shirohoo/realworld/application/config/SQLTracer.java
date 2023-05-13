@@ -41,7 +41,7 @@ public class SQLTracer implements MessageFormattingStrategy {
 
     private String formatQuery(String query, int connectionId, long elapsed, StringBuilder callstack) {
         return """
-                
+
                 ----------------------------------------------------------------------------------------------------
                                                                QUERY
                 ----------------------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ public class SQLTracer implements MessageFormattingStrategy {
                                                              INFORMATION
                 ----------------------------------------------------------------------------------------------------
                 Connection ID                           : %s
-                Execution Time                          : %s
+                Execution Time                          : %s ms
                 Call Stack (number 1 is entry point)    :
                 %s
                 ----------------------------------------------------------------------------------------------------
