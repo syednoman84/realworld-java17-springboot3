@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 @IntegrationTest
 @DisplayName("Realworld Application")
-abstract class RealworldApplicationTests {
+public class RealworldApplicationTests {
     @Test
     @DisplayName("spring container of Realworld Application is loaded.")
     void contextLoads() {}

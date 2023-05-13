@@ -57,10 +57,10 @@ class ArticleControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        SignUpUserRequest jamesSignUpRequest = new SignUpUserRequest("james@gmail.com", "james", "1234");
+        SignUpUserRequest jamesSignUpRequest = new SignUpUserRequest("james@example.com", "james", "1234");
         User james = userService.signUp(jamesSignUpRequest);
 
-        SignUpUserRequest simpsonSignUpRequest = new SignUpUserRequest("simpson@gmail.com", "simpson", "1234");
+        SignUpUserRequest simpsonSignUpRequest = new SignUpUserRequest("simpson@example.com", "simpson", "1234");
         User simpson = userService.signUp(simpsonSignUpRequest);
 
         simpson.follow(james);
@@ -76,10 +76,10 @@ class ArticleControllerTest {
                 .favorite(simpson);
         articleRepository.save(effectiveJava);
 
-        LoginUserRequest jamesLoginRequest = new LoginUserRequest("james@gmail.com", "1234");
+        LoginUserRequest jamesLoginRequest = new LoginUserRequest("james@example.com", "1234");
         jamesToken = "Token " + userService.login(jamesLoginRequest).token();
 
-        LoginUserRequest simpsonLoginRequest = new LoginUserRequest("simpson@gmail.com", "1234");
+        LoginUserRequest simpsonLoginRequest = new LoginUserRequest("simpson@example.com", "1234");
         simpsonToken = "Token " + userService.login(simpsonLoginRequest).token();
     }
 

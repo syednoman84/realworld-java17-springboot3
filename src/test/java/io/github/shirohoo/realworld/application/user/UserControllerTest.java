@@ -39,7 +39,7 @@ class UserControllerTest {
     void signUp() throws Exception {
         // given
         // - sign up request
-        SignUpUserRequest signUpRequest = new SignUpUserRequest("james@gmail.com", "james", "1234");
+        SignUpUserRequest signUpRequest = new SignUpUserRequest("james@example.com", "james", "password");
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/api/users")
@@ -51,7 +51,8 @@ class UserControllerTest {
                 .andExpect(status().isTemporaryRedirect())
                 .andExpect(view().name("redirect:/api/users/login"))
                 .andExpect(model().attributeExists("user"))
-                .andExpect(model().attribute("user", Map.of("user", new LoginUserRequest("james@gmail.com", "1234"))))
+                .andExpect(model().attribute(
+                                "user", Map.of("user", new LoginUserRequest("james@example.com", "password"))))
                 .andDo(print());
     }
 
@@ -60,11 +61,11 @@ class UserControllerTest {
     void login() throws Exception {
         // given
         // - sign up
-        SignUpUserRequest signUpRequest = new SignUpUserRequest("james@gmail.com", "james", "1234");
+        SignUpUserRequest signUpRequest = new SignUpUserRequest("james@example.com", "james", "password");
         userService.signUp(signUpRequest);
 
         // - login request
-        LoginUserRequest loginRequest = new LoginUserRequest("james@gmail.com", "1234");
+        LoginUserRequest loginRequest = new LoginUserRequest("james@example.com", "password");
 
         // when
         ResultActions resultActions = mockMvc.perform(post("/api/users/login")
@@ -75,7 +76,7 @@ class UserControllerTest {
         resultActions
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.user.email").value("james@gmail.com"))
+                .andExpect(jsonPath("$.user.email").value("james@example.com"))
                 .andExpect(jsonPath("$.user.username").value("james"))
                 .andExpect(jsonPath("$.user.token").isNotEmpty())
                 .andExpect(jsonPath("$.user.bio").isEmpty())
@@ -88,11 +89,11 @@ class UserControllerTest {
     void getCurrentUser() throws Exception {
         // given
         // - sign up
-        SignUpUserRequest signUpRequest = new SignUpUserRequest("james@gmail.com", "james", "1234");
+        SignUpUserRequest signUpRequest = new SignUpUserRequest("james@example.com", "james", "password");
         userService.signUp(signUpRequest);
 
         // - login and get authorization token
-        LoginUserRequest loginRequest = new LoginUserRequest("james@gmail.com", "1234");
+        LoginUserRequest loginRequest = new LoginUserRequest("james@example.com", "password");
         String jamesToken = userService.login(loginRequest).token();
 
         // when
@@ -102,7 +103,7 @@ class UserControllerTest {
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.user.email").value("james@gmail.com"))
+                .andExpect(jsonPath("$.user.email").value("james@example.com"))
                 .andExpect(jsonPath("$.user.username").value("james"))
                 .andExpect(jsonPath("$.user.token").isNotEmpty())
                 .andExpect(jsonPath("$.user.bio").isEmpty())
@@ -115,15 +116,15 @@ class UserControllerTest {
     void update() throws Exception {
         // given
         // - sign up
-        SignUpUserRequest signUpRequest = new SignUpUserRequest("james@gmail.com", "james", "1234");
+        SignUpUserRequest signUpRequest = new SignUpUserRequest("james@example.com", "james", "password");
         userService.signUp(signUpRequest);
 
         // - login and get authorization token
-        LoginUserRequest loginRequest = new LoginUserRequest("james@gmail.com", "1234");
+        LoginUserRequest loginRequest = new LoginUserRequest("james@example.com", "password");
         UserVO userVO = userService.login(loginRequest);
 
         // - update request
-        String email = "james.to@gmail.com";
+        String email = "james.to@example.com";
         String username = "james.to";
         String password = "5678";
         String bio = "I like to skateboard";
@@ -140,7 +141,7 @@ class UserControllerTest {
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.user.email").value("james.to@gmail.com"))
+                .andExpect(jsonPath("$.user.email").value("james.to@example.com"))
                 .andExpect(jsonPath("$.user.username").value("james.to"))
                 .andExpect(jsonPath("$.user.token").isNotEmpty())
                 .andExpect(jsonPath("$.user.bio").value("I like to skateboard"))

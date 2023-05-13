@@ -50,14 +50,14 @@ class ArticleServiceTest {
     @BeforeEach
     void setUp() throws Exception {
         james = User.builder()
-                .email("james@gmail.com")
+                .email("james@example.com")
                 .username("james")
                 .password("password")
                 .build();
         userRepository.save(james);
 
         simpson = User.builder()
-                .email("simpson@gmail.com")
+                .email("simpson@example.com")
                 .username("simpson")
                 .password("password")
                 .build();
@@ -251,7 +251,7 @@ class ArticleServiceTest {
         List<CommentVO> comments = sut.getArticleComments(simpson, "effective-java");
 
         // then
-        assertThat(comments).hasSize(1);
+        assertThat(comments.size()).isOne();
     }
 
     @Test
@@ -284,7 +284,7 @@ class ArticleServiceTest {
         sut.favoriteArticle(simpson, effectiveJava.slug());
 
         // then
-        assertThat(effectiveJava.favoriteCount()).isEqualTo(1);
+        assertThat(effectiveJava.favoriteCount()).isOne();
     }
 
     @Test
@@ -294,6 +294,6 @@ class ArticleServiceTest {
         sut.unfavoriteArticle(simpson, effectiveJava.slug());
 
         // then
-        assertThat(effectiveJava.favoriteCount()).isEqualTo(0);
+        assertThat(effectiveJava.favoriteCount()).isZero();
     }
 }

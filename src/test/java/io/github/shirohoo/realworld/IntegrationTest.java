@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 @Inherited
-@Documented
 @Transactional
 @SpringBootTest
 @AutoConfigureMockMvc

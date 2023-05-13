@@ -15,28 +15,28 @@ class CommentVOTest {
     @DisplayName("constructor works fine.")
     void constructor() {
         // given
-        User user = User.builder()
-                .username("test-user")
-                .email("test@example.com")
-                .password("test-password")
+        User james = User.builder()
+                .username("james")
+                .email("james@example.com")
+                .password("password")
                 .build();
         Comment comment = Comment.builder()
                 .id(1)
                 .content("Test comment")
-                .author(user)
+                .author(james)
                 .createdAt(LocalDateTime.of(2022, 1, 1, 0, 0))
                 .updatedAt(LocalDateTime.of(2022, 1, 2, 0, 0))
                 .build();
 
         // when
-        CommentVO commentVO = new CommentVO(user, comment);
+        CommentVO commentVO = new CommentVO(james, comment);
 
         // then
         assertThat(commentVO.id()).isEqualTo(1);
         assertThat(commentVO.createdAt()).isEqualTo(LocalDateTime.of(2022, 1, 1, 0, 0));
         assertThat(commentVO.updatedAt()).isEqualTo(LocalDateTime.of(2022, 1, 2, 0, 0));
         assertThat(commentVO.body()).isEqualTo("Test comment");
-        assertThat(commentVO.author().username()).isEqualTo("test-user");
+        assertThat(commentVO.author().username()).isEqualTo("james");
         assertThat(commentVO.author().following()).isFalse();
     }
 }

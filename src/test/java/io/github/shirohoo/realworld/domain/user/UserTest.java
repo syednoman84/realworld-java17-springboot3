@@ -115,6 +115,6 @@ class UserTest {
 
         // then
         assertThat(james.hasFavorite(article)).isFalse();
-        assertThat(article.favoriteCount()).isEqualTo(0);
+        assertThat(article.favoriteCount()).isZero();
     }
 }

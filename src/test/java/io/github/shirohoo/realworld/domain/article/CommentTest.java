@@ -16,17 +16,17 @@ class CommentTest {
     @DisplayName("returns true if the isAuthoredBy method matches the given User.")
     void isAuthoredBy_returnsTrue_whenAuthorMatches() {
         // given
-        User author = mock(User.class);
+        User mockUser = mock(User.class);
         Comment comment = Comment.builder()
                 .id(1)
-                .author(author)
+                .author(mockUser)
                 .content("This is a comment.")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
 
         // when
-        boolean result = comment.isWritten(author);
+        boolean result = comment.isWritten(mockUser);
 
         // then
         assertThat(result).isTrue();
@@ -37,7 +37,7 @@ class CommentTest {
     void isAuthoredBy_returnsFalse_whenAuthorDoesNotMatch() {
         // given
         User author = mock(User.class);
-        User anotherUser = mock(User.class);
+        User otherUser = mock(User.class);
         Comment comment = Comment.builder()
                 .id(1)
                 .author(author)
@@ -47,7 +47,7 @@ class CommentTest {
                 .build();
 
         // when
-        boolean result = comment.isWritten(anotherUser);
+        boolean result = comment.isWritten(otherUser);
 
         // then
         assertThat(result).isFalse();

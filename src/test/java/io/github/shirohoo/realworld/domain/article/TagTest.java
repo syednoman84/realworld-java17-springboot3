@@ -31,11 +31,11 @@ class TagTest {
     @DisplayName("returns true if the tag names are the same.")
     void equals_returnsTrue_whenNameMatches() {
         // given
-        Tag tag1 = new Tag("test-tag");
-        Tag tag2 = new Tag("test-tag");
+        Tag java1 = new Tag("java");
+        Tag java2 = new Tag("java");
 
         // when
-        boolean result = tag1.equals(tag2);
+        boolean result = java1.equals(java2);
 
         // then
         assertThat(result).isTrue();
@@ -45,11 +45,11 @@ class TagTest {
     @DisplayName("returns false if the tag names are different.")
     void equals_returnsFalse_whenNameDoesNotMatch() {
         // given
-        Tag tag1 = new Tag("test-tag-1");
-        Tag tag2 = new Tag("test-tag-2");
+        Tag java = new Tag("java");
+        Tag spring = new Tag("spring");
 
         // when
-        boolean result = tag1.equals(tag2);
+        boolean result = java.equals(spring);
 
         // then
         assertThat(result).isFalse();

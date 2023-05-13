@@ -85,7 +85,7 @@ class ArticleTest {
 
         // then
         assertThat(article.isFavoriteBy(alice)).isTrue();
-        assertThat(article.favoriteCount()).isEqualTo(1);
+        assertThat(article.favoriteCount()).isOne();
         assertThat(alice.hasFavorite(article)).isTrue();
     }
 

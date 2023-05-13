@@ -25,10 +25,10 @@ class ProfileServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        User james = new User().email("james@gmail.com").username("james");
+        User james = new User().email("james@example.com").username("james");
         userRepository.save(james);
 
-        User simpson = new User().email("simpson@gmail.com").username("simpson");
+        User simpson = new User().email("simpson@example.com").username("simpson");
         userRepository.save(simpson);
     }
 
@@ -41,8 +41,8 @@ class ProfileServiceTest {
     @DisplayName("provides function to lookup profile.")
     void getProfile() throws Exception {
         // given
-        User james = userRepository.findByEmail("james@gmail.com").orElseThrow();
-        User simpson = userRepository.findByEmail("simpson@gmail.com").orElseThrow();
+        User james = userRepository.findByEmail("james@example.com").orElseThrow();
+        User simpson = userRepository.findByEmail("simpson@example.com").orElseThrow();
 
         // when
         ProfileVO simpsonProfile = sut.getProfile(james, simpson);
@@ -58,8 +58,8 @@ class ProfileServiceTest {
     @DisplayName("provides the function to follow other users.")
     void follow() throws Exception {
         // given
-        User james = userRepository.findByEmail("james@gmail.com").orElseThrow();
-        User simpson = userRepository.findByEmail("simpson@gmail.com").orElseThrow();
+        User james = userRepository.findByEmail("james@example.com").orElseThrow();
+        User simpson = userRepository.findByEmail("simpson@example.com").orElseThrow();
 
         // when
         ProfileVO simpsonProfile = sut.follow(james, simpson);
@@ -76,8 +76,8 @@ class ProfileServiceTest {
     void unfollow() throws Exception {
         // given
         // - fetch users
-        User james = userRepository.findByEmail("james@gmail.com").orElseThrow();
-        User simpson = userRepository.findByEmail("simpson@gmail.com").orElseThrow();
+        User james = userRepository.findByEmail("james@example.com").orElseThrow();
+        User simpson = userRepository.findByEmail("simpson@example.com").orElseThrow();
 
         // - james follow simpson
         sut.follow(james, simpson);

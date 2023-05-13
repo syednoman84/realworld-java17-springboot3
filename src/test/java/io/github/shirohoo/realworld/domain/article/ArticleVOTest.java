@@ -46,7 +46,7 @@ class ArticleVOTest {
         assertThat(articleVO.createdAt()).isEqualTo(LocalDateTime.of(2022, 1, 1, 0, 0));
         assertThat(articleVO.updatedAt()).isEqualTo(LocalDateTime.of(2022, 1, 2, 0, 0));
         assertThat(articleVO.favorited()).isTrue();
-        assertThat(articleVO.favoritesCount()).isEqualTo(1);
+        assertThat(articleVO.favoritesCount()).isOne();
         assertThat(articleVO.author().username()).isEqualTo("james");
         assertThat(articleVO.author().bio()).isEqualTo("Test bio");
         assertThat(articleVO.author().image()).isEqualTo("https://test.com/image.png");
