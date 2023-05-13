@@ -25,10 +25,10 @@ class ProfileServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        User james = new User().email("james@example.com").username("james");
+        User james = User.builder().email("james@example.com").username("james").build();
         userRepository.save(james);
 
-        User simpson = new User().email("simpson@example.com").username("simpson");
+        User simpson = User.builder().email("simpson@example.com").username("simpson").build();
         userRepository.save(simpson);
     }
 

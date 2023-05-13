@@ -112,8 +112,7 @@ public class ArticleService {
 
     @Transactional
     public List<CommentVO> getArticleComments(User me, String slug) {
-        Optional<Article> bySlug = articleRepository.findBySlug(slug);
-        return bySlug
+        return articleRepository.findBySlug(slug)
                 .map(commentRepository::findByArticleOrderByCreatedAtDesc)
                 .orElseThrow(() -> new NoSuchElementException("Article not found by slug: `%s`".formatted(slug)))
                 .stream()
@@ -128,7 +127,7 @@ public class ArticleService {
                 .ifPresentOrElse(
                         comment -> {
                             if (comment.isWritten(me)) commentRepository.delete(comment);
-                            else throw new IllegalArgumentException("You cannot delete comments written by others.");
+                            else throw new IllegalArgumentException("You can't delete comments written by others.");
                         },
                         () -> {
                             throw new NoSuchElementException("Comment not found by id: `%d`".formatted(commentId));

@@ -65,13 +65,13 @@ class ArticleControllerTest {
 
         simpson.follow(james);
 
-        Tag java = new Tag().name("java");
+        Tag java = new Tag("java");
         tagRepository.save(java);
 
-        Article effectiveJava = new Article()
-                .slug("effective-java")
+        Article effectiveJava = Article.builder()
                 .title("Effective Java")
                 .author(james)
+                .build()
                 .addTag(java)
                 .favorite(simpson);
         articleRepository.save(effectiveJava);

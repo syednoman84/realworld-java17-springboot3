@@ -18,29 +18,33 @@ import lombok.experimental.Accessors;
 
 @Entity
 @Getter
-@Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "users")
 @Accessors(fluent = true, chain = true)
 @EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
     @Id
     @Setter(AccessLevel.PRIVATE)
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Setter
     @Column(unique = true)
     private String email;
 
+    @Setter
     private String password;
 
+    @Setter
     @Column(unique = true)
     private String username;
 
+    @Setter
     private String bio;
 
+    @Setter
     private String image;
 
     @CreatedDate
@@ -63,6 +67,7 @@ public class User {
     @ManyToMany(mappedBy = "favorites")
     private final Set<Article> favoritedArticles = new HashSet<>();
 
+    @Setter
     @Transient
     private String token;
 
