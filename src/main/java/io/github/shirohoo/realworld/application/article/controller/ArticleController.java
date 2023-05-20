@@ -43,6 +43,8 @@ public class ArticleController {
         return new SingleArticleResponse(article);
     }
 
+    // this controller has a problem when slug parameter is not supplied it sets applies the update on any one of the articles.
+    // it should throw error if slug is not provided in the query parameter
     @PutMapping("/api/articles/{slug}")
     public SingleArticleResponse updateArticle(
             User me, @PathVariable String slug, @RequestBody UpdateArticleRequest request) {
@@ -79,6 +81,7 @@ public class ArticleController {
         return new MultipleCommentsResponse(comments);
     }
 
+    // this controller is failing to delete a comment due to constraint violation
     @DeleteMapping("/api/articles/{slug}/comments/{id}")
     public void deleteComment(User me, @PathVariable String slug, @PathVariable int id) {
         articleService.deleteComment(me, id);
